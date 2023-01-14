@@ -6,7 +6,7 @@
 #include <climits>
 using namespace std;
 
-const int NUM_CITIES = 24;
+const int NUM_CITIES = 3;
 const int NUM_TRUCKS = 50;
 
 // Graph data structure to represent the transportation network
@@ -99,31 +99,89 @@ int dijkstra(int start, int end)
     }
     return -1;
 }
-void displayNetwork(string fileName) {
+
+void displayNetwork(string fileName)
+{
     // Open the file
     ifstream file(fileName);
 
     // Check if the file is open
-    if (!file.is_open()) {
+    if (!file.is_open())
+    {
         cerr << "Error: Could not open file " << fileName << endl;
         return;
     }
 
     // Read the file line by line
     string line;
-    while (getline(file, line)) {
+    while (getline(file, line))
+    {
         cout << line << endl;
     }
 }
 
+void writeNetwork(string fileName)
+{
+    // Open the file
+    ofstream file(fileName);
+
+    // Check if the file is open
+    if (!file.is_open())
+    {
+        cerr << "Error: Could not open file " << fileName << endl;
+        return;
+    }
+
+    // Write the edges to the file
+    for (int i = 0; i < NUM_CITIES; i++)
+    {
+        for (auto j : graph[i])
+        {
+            int neighbor = j.first;
+            int weight = j.second;
+            file << i << "," << neighbor << "," << weight << endl;
+        }
+    }
+
+    // Close the file
+    file.close();
+}
+void writeInputFile(string fileName, vector<pair<int, int>> graph[NUM_CITIES])
+{
+    // Open the file
+    ofstream file(fileName);
+
+    // Check if the file is open
+    if (!file.is_open())
+    {
+        cerr << "Error: Could not open file " << fileName << endl;
+        return;
+    }
+
+    // Write the graph data to the file
+    for (int i = 0; i < NUM_CITIES; i++)
+    {
+        for (auto j : graph[i])
+        {
+            file << i << "," << j.first << "," << j.second << endl;
+        }
+    }
+}
 
 int main()
 {
     // Initialize the transportation network
-    readNetwork("network.txt");
+    // writeInputFile("networks.txt",5,8,);
+    // writeInputFile("new_network.txt", 10, 20);
+    vector<pair<int, int>> dummyGraph[NUM_CITIES];
+    dummyGraph[0].push_back({1, 10});
+    dummyGraph[1].push_back({2, 20});
+    dummyGraph[2].push_back({3, 30});
+    dummyGraph[3].push_back({4, 40});
+    writeInputFile("networks.txt", dummyGraph);
+    readNetwork("networks.txt");
     // Find the shortest path between two cities
     int start = 0;
-
     int end = NUM_CITIES - 1;
     int shortestPath = dijkstra(start, end);
     if (shortestPath == INT_MAX)
@@ -134,5 +192,8 @@ int main()
     {
         cout << "Minimum cost to reach city " << end << " is: " << shortestPath << endl;
     }
+    // Write the network to a file
+    writeNetwork("network_output.txt");
+    displayNetwork("network_output.txt");
     return 0;
 }
